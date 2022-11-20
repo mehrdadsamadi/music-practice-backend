@@ -77,8 +77,8 @@ module.exports = class Application {
 
     connectToDB() {
         mongoose.connect(this.#DB_URI, (err) => {
-            if(!err) console.log("connect to mongoDB");
-            throw err
+            if(!err) return console.log("connect to mongoDB");
+            return console.log(err)
         })
 
         mongoose.connection.on("connected", () => {
