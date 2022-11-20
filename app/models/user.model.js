@@ -5,6 +5,7 @@ const userSchema = new Schema({
     first_name: {type: String, required: true},
     last_name: {type: String, required: true},
     mobile: {type: String, required: true},
+    password: {type: String, required: true},
     instrument: {type: Types.ObjectId, ref: "instrument", required: true},
     score: {type: [scoreSchema], default: []},
     message: {type: [messageSchema], default: []},
