@@ -9,6 +9,7 @@ const userSchema = new Schema({
     score: {type: [scoreSchema], default: []},
     message: {type: [messageSchema], default: []},
     practice: {type: [practiceSchema], default: []},
+    role: {type: String, default: "USER"}
 }, {
     timestamps: true,
 })

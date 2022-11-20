@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
-const createError = require('http-errors');
+const createHttpError = require('http-errors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
@@ -102,11 +102,11 @@ module.exports = class Application {
 
     errorHandling() {
         this.#app.use((req, res, next) => {
-            next(createError.NotFound("آدرس مورد نظر یافت نشد"))
+            next(createHttpError.NotFound("آدرس مورد نظر یافت نشد"))
         })
 
         this.#app.use((err, req, res, next) => {
-            const serverError = createError.InternalServerError()
+            const serverError = createHttpError.InternalServerError()
             const status = err.status || serverError.status
             const message = err.message || serverError.message
 
