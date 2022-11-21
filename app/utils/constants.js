@@ -41,6 +41,5 @@ module.exports = {
             DELETE: "delete-festival",
         },
         ADMIN: "ALL"
-    }),
-    ACCESS_TOKEN_SECRET_KEY : "8cfecd937a9328ecb71d3c08e5dd312058ca7d75171e7ba6e3af7573e210cd6c"
+    })
 }

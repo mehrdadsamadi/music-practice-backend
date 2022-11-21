@@ -1,7 +1,6 @@
 const createHttpError = require("http-errors")
 const JWT = require('jsonwebtoken');
 const { UserModel } = require("../models/user.model");
-const { ACCESS_TOKEN_SECRET_KEY } = require("../utils/constants");
 
 function getToken(headers) {
     const [bearer, token] = headers?.authorization?.split(" ") || []
@@ -13,7 +12,7 @@ function verifyAccessToken(req, res, next) {
     try {
         const token = getToken(req.headers)
 
-        JWT.verify(token, ACCESS_TOKEN_SECRET_KEY, async (err, payload) => {
+        JWT.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY, async (err, payload) => {
             try {
                 if(err) throw createHttpError.Unauthorized("لطفا وارد حساب کاربری خود شوید")
 
