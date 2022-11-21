@@ -2,80 +2,51 @@
  * @swagger
  *  components:
  *      schemas:
- *          getOtp:
+ *          addInstrument:
  *              type: object
  *              required:
- *                  -   mobile
+ *                  -   name
  *              properties:
- *                  mobile:
+ *                  name:
  *                      type: string
- *                      description: entre your phone number to signin/signup
- *          checkOtp:
- *              type: object
- *              required: 
- *                  -   mobile
- *                  -   code
- *              properties:
- *                  mobile:
- *                      type: string
- *                      description: entre your phone number to signin
- *                  code:
- *                      type: integer
- *                      description: entre otp code
+ *                      description: entre instrument name to add
  */
 
 /**
  * @swagger
  *  tags:
- *      name: User-Authentication
- *      description: user auth section
+ *      name: Instrument
+ *      description: Instrument section
  */
 
 /**
  * @swagger
- *  /user/get-otp:
- *      post:
- *          tags: [User-Authentication]
- *          summary: login user in user panel with phone number
- *          description: one time password login
- *          requestBody:
- *              required: true
- *              content:
- *                  application/x-www-form-urlencoded:
- *                      schema:
- *                          $ref: '#/components/schemas/getOtp'
- *                  application/json:
- *                      schema:
- *                          $ref: '#/components/schemas/getOtp'
+ *  /instrument/get-all:
+ *      get:
+ *          tags: [Instrument]
+ *          summary: get all instruments
  *          responses:
  *              200:
  *                  description: success
- *              400: 
- *                  description: bad request
- *              401:
- *                  description: unauthorization
- *              500:
- *                  description: internal server error
  */
 
 /**
  * @swagger
- *  /user/check-otp:
+ *  /instrument/add:
  *      post:
- *          tags: [User-Authentication]
- *          summary: login user in user panel with phone number
- *          description: one time password login
+ *          tags: [Instrument]
+ *          summary: add instrument
  *          requestBody:
  *              required: true
  *              content:
  *                  application/x-www-form-urlencoded:
  *                      schema:
- *                          $ref: '#/components/schemas/checkOtp'
+ *                          $ref: '#/components/schemas/addInstrument'
  *                  application/json:
  *                      schema:
- *                          $ref: '#/components/schemas/checkOtp'
+ *                          $ref: '#/components/schemas/addInstrument'
  *          responses:
- *              200:
+ *              201:
  *                  description: success
  *              400: 
  *                  description: bad request

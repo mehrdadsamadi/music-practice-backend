@@ -6,6 +6,8 @@ const festivalSchema = new Schema({
     end_in: {type: String, required: true},
     gifts: {type: [Types.ObjectId], ref: "gift", default: []},
     users: {type: [Types.ObjectId], ref: "user", default: []},
+}, {
+    versionKey: false
 })
 
 module.exports = {

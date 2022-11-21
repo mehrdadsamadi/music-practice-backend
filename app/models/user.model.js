@@ -17,6 +17,7 @@ const userSchema = new Schema({
     role: {type: String, default: "USER"}
 }, {
     timestamps: true,
+    versionKey: false
 })
 
 module.exports = {

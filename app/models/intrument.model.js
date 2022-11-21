@@ -1,7 +1,9 @@
 const {Schema, model} = require('mongoose');
 
 const instrumentSchema = new Schema({
-    name: {type: String, required: true},
+    name: {type: String, required: true, unique: true},
+}, {
+    versionKey: false
 })
 
 module.exports = {

@@ -1,10 +1,10 @@
-const { AuthController } = require('../../controllers/auth/auth.controller');
+const { InstrumentController } = require('../../controllers/instrument/instrument.controller');
 
 const router = require('express').Router();
 
-router.post("/get-otp", AuthController.getOtp)
-router.post("/check-otp", AuthController.checkOtp)
+router.get("/get-all", InstrumentController.getInstruments)
+router.post("/add", InstrumentController.addInstrument)
 
 module.exports = {
-    AuthRoutes: router
+    InstrumentRoutes: router
 }
