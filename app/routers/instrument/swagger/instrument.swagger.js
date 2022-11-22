@@ -55,3 +55,19 @@
  *              500:
  *                  description: internal server error
  */
+
+/**
+ * @swagger
+ *  /instrument/remove/{instrumentId}:
+ *      delete:
+ *          tags: [Instrument]
+ *          summary: delete instrument by id
+ *          parameters:
+ *              -   in: path
+ *                  name: instrumentId
+ *                  type: string
+ *                  required: true
+ *          responses:
+ *              200:
+ *                  description: success
+ */

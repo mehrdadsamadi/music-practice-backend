@@ -1,5 +1,6 @@
 const createHttpError = require("http-errors");
 const { StatusCodes } = require("http-status-codes");
+
 const {GiftModel} = require("../../models/gift.model");
 const Controller = require("../controller");
 
@@ -37,24 +38,28 @@ class GiftController extends Controller {
     }
 
     async updateGift(req, res, next) {
-        const {giftId} = req.params
-
-        const gift = await GiftModel.findOne({_id: giftId})
-        if(!gift) throw createHttpError.NotFound("هدیه ای با این آیدی یافت نشد")
-
-        const data = JSON.parse(JSON.stringify(req.body))
-        
-        const result = GiftModel.updateOne({_id: giftId}, {
-            $set: data
-        })
-        if(!result.modifiedCount) throw createHttpError.InternalServerError("خطای سرور لطفا بعدا امتحان کنید")
-
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            data: {
-                message: "هدیه مورد نظر با موفقیت ویرایش شد"
-            }
-        })
+        try {
+            const {giftId} = req.params
+    
+            const gift = await GiftModel.findOne({_id: giftId})
+            if(!gift) throw createHttpError.NotFound("هدیه ای با این آیدی یافت نشد")
+    
+            const data = JSON.parse(JSON.stringify(req.body))
+            
+            const result = await GiftModel.updateOne({_id: giftId}, {
+                $set: data
+            })
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("ویرایش هدیه ناموفق بود")
+    
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    message: "هدیه مورد نظر با موفقیت ویرایش شد"
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     async removeGift(req, res, next) {
