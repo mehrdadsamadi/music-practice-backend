@@ -5,6 +5,7 @@ const roleSchema = new Schema({
     description: {type: String, default: "", },
     permissions: [{type: Types.ObjectId, ref: "permission"}]
 }, {
+    timestamps: true,
     versionKey: false
 })
 

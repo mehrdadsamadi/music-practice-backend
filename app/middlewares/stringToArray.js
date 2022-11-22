@@ -6,7 +6,8 @@ const stringToArray = function(field) {
             } else if(req.body[field].includes(",")) {
                 req.body[field] = req.body[field].split(",").map(item => item.trim()) 
             } else {
-                req.body[field] = JSON.parse("["+ req.body[field] +"]")
+                req.body[field] = [req.body[field]]
+                console.log(req.body);
             }
         } else {
             req.body[field] = []

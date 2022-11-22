@@ -7,9 +7,10 @@ const festivalSchema = new Schema({
     gifts: {type: [Types.ObjectId], ref: "gift", default: []},
     users: {type: [Types.ObjectId], ref: "user", default: []},
 }, {
+    timestamps: true,
     versionKey: false
 })
 
 module.exports = {
-    festivalModel: model("instrument",festivalSchema)
+    FestivalModel: model("festival",festivalSchema)
 }

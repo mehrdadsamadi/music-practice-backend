@@ -5,6 +5,7 @@ const giftSchema = new Schema({
     min_score: {type: String, required: true},
     in_festival: {type: Boolean, default: false}
 }, {
+    timestamps: true,
     versionKey: false
 })
 

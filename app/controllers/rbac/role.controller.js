@@ -51,7 +51,7 @@ class RoleController extends Controller {
 
             const role = await RoleModel.findOne({_id: roleId})
             if(!role) throw createHttpError.NotFound("نقشی با این آیدی یافت نشد")
-
+            
             const data = JSON.parse(JSON.stringify(req.body))
 
             const result = await RoleModel.updateOne({_id: roleId}, {
