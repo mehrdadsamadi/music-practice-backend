@@ -22,6 +22,24 @@ class ScoreController extends Controller {
         }
     }
 
+    async getOneScore(req, res, next) {
+        try {
+            const {scoreId} = req.params
+
+            const {scores} = await UserModel.findOne({"scores._id": scoreId}, "scores.$")
+            if(!scores) throw createHttpError.NotFound("کاربری با این آیدی یافت نشد")
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    score: scores[0]
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async addScore(req, res, next) {
         try {
             const {userId} = req.params
