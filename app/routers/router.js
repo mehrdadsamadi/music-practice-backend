@@ -1,4 +1,6 @@
+const { can } = require('../middlewares/can.guard');
 const { verifyAccessToken } = require('../middlewares/verifyAccessToken');
+const { PERMISSIONS } = require('../utils/constants');
 const { AuthRoutes } = require('./auth/auth.routes');
 const { InstrumentRoutes } = require('./instrument/instrument.routes');
 const { PermissionRoutes } = require('./rbac/permission.routes');
@@ -6,10 +8,10 @@ const { RoleRoutes } = require('./rbac/role.routes');
 
 const router = require('express').Router();
 
-router.use("/user", AuthRoutes)
-router.use("/instrument", verifyAccessToken, InstrumentRoutes)
-router.use("/role", verifyAccessToken, RoleRoutes)
-router.use("/permission", verifyAccessToken, PermissionRoutes)
+router.use("/auth", AuthRoutes)
+router.use("/instrument", can([PERMISSIONS.ADMIN]), verifyAccessToken, InstrumentRoutes)
+router.use("/role", can([PERMISSIONS.ADMIN]), verifyAccessToken, RoleRoutes)
+router.use("/permission", can([PERMISSIONS.ADMIN]), verifyAccessToken, PermissionRoutes)
 
 module.exports = {
     AllRoutes: router

@@ -33,7 +33,7 @@
 
 /**
  * @swagger
- *  /user/get-otp:
+ *  /auth/get-otp:
  *      post:
  *          tags: [User-Authentication]
  *          summary: login user in user panel with phone number
@@ -60,7 +60,7 @@
 
 /**
  * @swagger
- *  /user/check-otp:
+ *  /auth/check-otp:
  *      post:
  *          tags: [User-Authentication]
  *          summary: login user in user panel with phone number

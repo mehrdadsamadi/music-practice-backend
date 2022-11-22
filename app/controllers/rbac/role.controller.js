@@ -25,8 +25,10 @@ class RoleController extends Controller {
     async addRole(req, res, next) {
         try {
             await addRoleValidteSchema.validate(req.body)
+            
             const {title, description, permissions} = req.body
-            console.log(req.body);
+            req.body["title"] = req.body["title"].toUpperCase()
+
             const role = await RoleModel.findOne({title})
             if(role) throw createHttpError.BadRequest("نقشی با این عنوان وجود دارد")
 

@@ -9,5 +9,5 @@ const giftSchema = new Schema({
 })
 
 module.exports = {
-    giftModel: model("gift",giftSchema)
+    GiftModel: model("gift",giftSchema)
 }

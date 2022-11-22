@@ -19,10 +19,11 @@ class AuthController extends Controller {
             const saveUserResult = this.saveUser(mobile, code)
             if(!saveUserResult) throw createHttpError.Unauthorized("ورود شما ناموفق بود")
 
-            const sendMessage = `
-                << اپلیکیشن تمرین موسیقی >>
+            const sendMessage = 
+`
 کد ورود شما: ${code}
-            `
+ << اپلیکیشن تمرین موسیقی >>
+`
             const practicePhone = kavenegar.KavenegarApi({apikey: process.env.KAVENEGAR_API_KEY})
             practicePhone.Send({ message: sendMessage.trim() , sender: "1000596446" , receptor: mobile });
             
