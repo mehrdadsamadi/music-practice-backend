@@ -83,7 +83,7 @@ class AuthController extends Controller {
             await passwordValidateSchema.validate(req.body)
 
             const {password} = req.body
-            console.log(req.user);
+
             if(!req.user) throw createHttpError.Unauthorized("ابتدا ثبت نام کنید سپس وارد شوید")
 
             bcrypt.genSalt(10, function(err, salt) {
@@ -105,6 +105,31 @@ class AuthController extends Controller {
                 }
             })
 
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async setUserInfo(req, res, next) {
+        try {
+            const {first_name, last_name, instrument} = req.body
+
+            const result = await UserModel.updateOne({mobile: req.user.mobile}, {
+                $set: {
+                    first_name,
+                    last_name,
+                    instrument
+                }
+            })
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("ثبت اطلاعات کاربر ناموفق بود") 
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    user: req.user,
+                    message: "ثبت اطلاعات کاربر با موفقیت انجام شد"
+                }
+            })
         } catch (error) {
             next(error)
         }

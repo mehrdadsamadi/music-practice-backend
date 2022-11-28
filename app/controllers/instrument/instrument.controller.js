@@ -11,7 +11,9 @@ class InstrumentController extends Controller {
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
-                instruments
+                data: {
+                    instruments
+                }
             })
         } catch (error) {
             next(error)

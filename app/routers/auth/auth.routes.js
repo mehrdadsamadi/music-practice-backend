@@ -7,6 +7,7 @@ router.post("/get-otp", AuthController.getOtp)
 router.post("/check-otp", AuthController.checkOtp)
 router.patch("/set-password", verifyAccessToken, AuthController.setPassword)
 router.post("/login", AuthController.loginWithPassword)
+router.patch("/set-info", verifyAccessToken, AuthController.setUserInfo)
 router.get("/get-user", AuthController.getLoginUser)
 
 module.exports = {
