@@ -1,11 +1,12 @@
 const kavenegar = require('kavenegar');
 const createHttpError = require("http-errors");
+const bcrypt = require('bcrypt');
 const {StatusCodes} = require('http-status-codes');
 
 const { UserModel } = require("../../models/user.model");
 const { ROLES } = require("../../utils/constants");
 const { generateRandomNumber, signAccessToken } = require("../../utils/function");
-const { getOtpValidteSchema, checkOtpValidateSchema } = require("../../validators/auth/auth.validator.schema");
+const { getOtpValidteSchema, checkOtpValidateSchema, passwordValidateSchema, loginValidateSchema } = require("../../validators/auth/auth.validator.schema");
 const Controller = require("../controller");
 
 class AuthController extends Controller {
@@ -13,7 +14,14 @@ class AuthController extends Controller {
         try {
             await getOtpValidteSchema.validate(req.body)
 
-            const {mobile} = req.body
+            const {mobile, resend} = req.body
+
+            if(resend)
+                await UserModel.deleteOne({mobile})
+
+            const user = await UserModel.findOne({mobile})
+            if(user) throw createHttpError.BadRequest("این شماره موبایل قبلا ثبت نام شده است")
+
             const code = generateRandomNumber()
 
             const saveUserResult = this.saveUser(mobile, code)
@@ -46,7 +54,7 @@ class AuthController extends Controller {
             await checkOtpValidateSchema.validate(req.body)
 
             const {mobile, code} = req.body
-            const user = await UserModel.findOne({mobile})
+            const user = await UserModel.findOne({mobile}, {password: 0})
             if(!user) throw createHttpError.NotFound("کاربری با این شماره تلفن یافت نشد")
 
             if(user.otp.code != code) throw createHttpError.Unauthorized("کد ارسال شده صحیح نمیباشد")
@@ -60,10 +68,88 @@ class AuthController extends Controller {
                 status: StatusCodes.OK,
                 data: {
                     accessToken,
-                    messsage: "ورود شما موفقیت آمیز بود"
+                    user,
+                    message: "ثبت نام شما موفقیت آمیز بود، حال کلمه عبوری برای خود ایجاد کنید"
                 }
             })
             
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async setPassword(req,res, next) {
+        try {
+            await passwordValidateSchema.validate(req.body)
+
+            const {password} = req.body
+            console.log(req.user);
+            if(!req.user) throw createHttpError.Unauthorized("ابتدا ثبت نام کنید سپس وارد شوید")
+
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(password, salt, async function(err, hash) {
+                    const result = await UserModel.updateOne({mobile: req.user.mobile}, {
+                        $set: {
+                            password: hash
+                        }
+                    })
+
+                    if(!result.modifiedCount) throw createHttpError.InternalServerError("ذخیره کلمه عبور ناموفق بود")
+                });
+            });
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    message: "کلمه عبور شما با موفقیت ذخیره شد"
+                }
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async loginWithPassword(req, res, next) {
+        try {
+            await loginValidateSchema.validate(req.body)
+
+            const {mobile, password} = req.body
+
+            const user = await UserModel.findOne({mobile})
+            if(!user) throw createHttpError.BadRequest("شماره موبایل یا کلمه عبور اشتباه است")
+
+            bcrypt.compare(password, user.password, function(err, result) {
+                if(!result) throw createHttpError.BadRequest("شماره موبایل یا کلمه عبور اشتباه است")
+            });
+
+            const accessToken = await signAccessToken(user._id)
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    accessToken,
+                    user,
+                    message: "ورود شما موفقیت آمیز بود"
+                }
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    
+    async getLoginUser(req, res, next) {
+        try {
+            if(!req.user) throw createHttpError.Unauthorized("کاربری لاگین نکرده است")
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    user: req.user
+                }
+            })
         } catch (error) {
             next(error)
         }
