@@ -144,12 +144,12 @@ class AuthController extends Controller {
             const user = await UserModel.findOne({mobile})
             if(!user) throw createHttpError.BadRequest("شماره موبایل یا کلمه عبور اشتباه است")
 
-            bcrypt.compare(password, user.password, function(err, result) {
-                if(!result) throw createHttpError.BadRequest("شماره موبایل یا کلمه عبور اشتباه است")
-            });
+            const compareResult = await bcrypt.compareSync(password, user.password);
+
+            if(!compareResult) throw createHttpError.BadRequest("شماره موبایل یا کلمه عبور اشتباه است")
 
             const accessToken = await signAccessToken(user._id)
-
+    
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
@@ -163,7 +163,6 @@ class AuthController extends Controller {
             next(error)
         }
     }
-
     
     async getLoginUser(req, res, next) {
         try {

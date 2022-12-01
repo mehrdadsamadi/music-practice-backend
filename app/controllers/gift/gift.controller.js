@@ -19,6 +19,23 @@ class GiftController extends Controller {
             next(error)
         }
     }
+    
+    async getOneGift(req, res, next) {
+        try {
+            const {giftId} = req.params
+
+            const gift = await GiftModel.findOne({_id: giftId})
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    gift
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 
     async createGift(req, res, next) {
         try {
