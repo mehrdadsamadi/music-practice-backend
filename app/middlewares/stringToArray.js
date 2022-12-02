@@ -7,8 +7,9 @@ const stringToArray = function(field) {
                 req.body[field] = req.body[field].split(",").map(item => item.trim()) 
             } else {
                 req.body[field] = [req.body[field]]
-                console.log(req.body);
             }
+        } else if(typeof req.body[field] == "object"){
+            next()
         } else {
             req.body[field] = []
         }

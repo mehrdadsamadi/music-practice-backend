@@ -1,9 +1,11 @@
 const { MessageRoutes } = require('./message.routes');
 const { PracticeRoutes } = require('./practice.routes');
 const { ScoreRoutes } = require('./score.routes');
+const { UserInfoRoutes } = require('./userInfo.routes');
 
 const router = require('express').Router();
 
+router.use("/", UserInfoRoutes)
 router.use("/score", ScoreRoutes)
 router.use("/message", MessageRoutes)
 router.use("/practice", PracticeRoutes)
