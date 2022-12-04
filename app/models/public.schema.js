@@ -10,6 +10,7 @@ const scoreSchema = new Schema({
 
 const messageSchema = new Schema({
     message: {type: String, default: ""},
+    seen: {type: Boolean, default: false}
 }, {
     versionKey: false,
     timestamps: true

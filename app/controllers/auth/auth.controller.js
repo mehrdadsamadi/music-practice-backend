@@ -101,7 +101,7 @@ class AuthController extends Controller {
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    message: "کلمه عبور شما با موفقیت ذخیره شد"
+                    message: "کلمه عبور شما با موفقیت ذخیره شد ، حال اطلاعات خود را ثبت کنید"
                 }
             })
 
@@ -121,13 +121,13 @@ class AuthController extends Controller {
                     instrument
                 }
             })
-            if(!result.modifiedCount) throw createHttpError.InternalServerError("ثبت اطلاعات کاربر ناموفق بود") 
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("ثبت اطلاعات شما ناموفق بود") 
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
                     user: req.user,
-                    message: "ثبت اطلاعات کاربر با موفقیت انجام شد"
+                    message: "ثبت اطلاعات شما با موفقیت انجام شد"
                 }
             })
         } catch (error) {
