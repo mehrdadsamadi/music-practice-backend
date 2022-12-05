@@ -15,7 +15,7 @@ router.use("/auth", AuthRoutes)
 router.use("/instrument", InstrumentRoutes)
 router.use("/gift", verifyAccessToken, can([PERMISSIONS.ADMIN]), GiftRoutes)
 router.use("/festival", verifyAccessToken, can([PERMISSIONS.ADMIN]), FestivalRoutes)
-router.use("/user", verifyAccessToken, can([PERMISSIONS.ADMIN]), UserRoutes)
+router.use("/user", verifyAccessToken, UserRoutes)
 router.use("/role", verifyAccessToken, can([PERMISSIONS.ADMIN]), RoleRoutes)
 router.use("/permission", verifyAccessToken, can([PERMISSIONS.ADMIN]), PermissionRoutes)
 

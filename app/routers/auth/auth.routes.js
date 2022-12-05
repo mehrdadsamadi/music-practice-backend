@@ -8,7 +8,7 @@ router.post("/check-otp", AuthController.checkOtp)
 router.patch("/set-password", verifyAccessToken, AuthController.setPassword)
 router.post("/login", AuthController.loginWithPassword)
 router.patch("/set-info", verifyAccessToken, AuthController.setUserInfo)
-router.get("/get-user", AuthController.getLoginUser)
+router.get("/get-user", verifyAccessToken, AuthController.getLoginUser)
 
 module.exports = {
     AuthRoutes: router

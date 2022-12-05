@@ -39,6 +39,30 @@ class MessageController extends Controller {
             next(error)
         }
     }
+    
+    async seenMessage(req, res, next) {
+        try {
+            const {userId} = req.params
+            //FIXME: وقتی سین تغییر میکنه ، مسیج پاک میشه
+            const data = JSON.parse(JSON.stringify({seen: true}))
+
+            const result = await UserModel.updateOne({_id: userId}, {
+                $set: {
+                    messages: data
+                }
+            })
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("دیدن پیام ناموفق بود")
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    message: "دیدن پیام با موفقیت انجام شد"
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 
     async addMessage(req, res, next) {
         try {
