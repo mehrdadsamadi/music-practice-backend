@@ -43,12 +43,16 @@ class MessageController extends Controller {
     async seenMessage(req, res, next) {
         try {
             const {userId} = req.params
-            //FIXME: وقتی سین تغییر میکنه ، مسیج پاک میشه
-            const data = JSON.parse(JSON.stringify({seen: true}))
+
+            const {messages} = await UserModel.findOne({_id: userId}, {messages: 1})
+            const userMessages = JSON.parse(JSON.stringify(messages))
+            messages.forEach(item => {
+                item.seen = true
+            });
 
             const result = await UserModel.updateOne({_id: userId}, {
                 $set: {
-                    messages: data
+                    messages
                 }
             })
             if(!result.modifiedCount) throw createHttpError.InternalServerError("دیدن پیام ناموفق بود")
@@ -56,7 +60,8 @@ class MessageController extends Controller {
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    message: "دیدن پیام با موفقیت انجام شد"
+                    message: "دیدن پیام با موفقیت انجام شد",
+                    messages: userMessages.reverse()
                 }
             })
         } catch (error) {
