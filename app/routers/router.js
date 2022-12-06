@@ -7,6 +7,7 @@ const { GiftRoutes } = require('./gift/gift.routes');
 const { InstrumentRoutes } = require('./instrument/instrument.routes');
 const { PermissionRoutes } = require('./rbac/permission.routes');
 const { RoleRoutes } = require('./rbac/role.routes');
+const { TimeGoalRoutes } = require('./timeGoal/timeGoal.routes');
 const { UserRoutes } = require('./user/user.routes');
 
 const router = require('express').Router();
@@ -15,6 +16,7 @@ router.use("/auth", AuthRoutes)
 router.use("/instrument", InstrumentRoutes)
 router.use("/gift", verifyAccessToken, can([PERMISSIONS.ADMIN]), GiftRoutes)
 router.use("/festival", verifyAccessToken, can([PERMISSIONS.ADMIN]), FestivalRoutes)
+router.use("/timeGoal", TimeGoalRoutes)
 router.use("/user", verifyAccessToken, UserRoutes)
 router.use("/role", verifyAccessToken, can([PERMISSIONS.ADMIN]), RoleRoutes)
 router.use("/permission", verifyAccessToken, can([PERMISSIONS.ADMIN]), PermissionRoutes)
