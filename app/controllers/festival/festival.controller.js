@@ -36,6 +36,35 @@ class FestivalController extends Controller {
         }
     }
 
+    async addUserToFestival(req, res, next) {
+        try {
+            const {festivalId} = req.params
+
+            const festival = await this.findFestival(festivalId)
+            if(!festival) throw createHttpError.NotFound("فستیوالی با این آیدی یافت نشد")
+            
+            const existUser = festival.users.filter(user => user._id.equals(req.user._id))
+            if(existUser.length) throw createHttpError.BadRequest("شما قبلا در این جشنواره شرکت کرده اید")
+
+            const result = await FestivalModel.updateOne({_id: festivalId}, {
+                $push: {
+                    users: req.user._id
+                }
+            })
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("شرکت در جشنواره ناموفق بود")
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    message: "شما با موفقیت وارد جشنواره شدید"
+                }
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async createFestival(req, res, next) {
         try {
             await FestivalModel.create(req.body)

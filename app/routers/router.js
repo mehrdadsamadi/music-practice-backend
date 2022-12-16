@@ -15,7 +15,7 @@ const router = require('express').Router();
 router.use("/auth", AuthRoutes)
 router.use("/instrument", InstrumentRoutes)
 router.use("/gift", verifyAccessToken, can([PERMISSIONS.ADMIN]), GiftRoutes)
-router.use("/festival", verifyAccessToken, can([PERMISSIONS.ADMIN]), FestivalRoutes)
+router.use("/festival", FestivalRoutes)
 router.use("/timeGoal", TimeGoalRoutes)
 router.use("/user", verifyAccessToken, UserRoutes)
 router.use("/role", verifyAccessToken, can([PERMISSIONS.ADMIN]), RoleRoutes)
