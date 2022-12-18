@@ -27,15 +27,10 @@
 
 /**
  * @swagger
- *  /user/practice/get-all/{userId}:
+ *  /user/practice/get-all:
  *      get:
  *          tags: [Practice]
  *          summary: get all user practice
- *          parameters:
- *              -   in: path
- *                  name: userId
- *                  type: string
- *                  required: true
  *          responses:
  *              200:
  *                  description: success
@@ -59,15 +54,10 @@
 
 /**
  * @swagger
- *  /user/practice/add/{userId}:
+ *  /user/practice/add:
  *      patch:
  *          tags: [Practice]
  *          summary: add practice to user
- *          parameters:
- *              -   in: path
- *                  name: userId
- *                  type: string
- *                  required: true
  *          requestBody:
  *              required: true
  *              content:

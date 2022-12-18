@@ -71,7 +71,7 @@ module.exports = class Application {
 
     createServer() {
         http.createServer(this.#app).listen(this.#PORT, () => {
-            console.log("server run in http://localhost:" + this.#PORT);
+            console.log("server run in http://localhost:" + this.#PORT + "/api-docs");
         })
     }
 

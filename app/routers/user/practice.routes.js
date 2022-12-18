@@ -2,9 +2,9 @@ const { PracticeController } = require('../../controllers/user/practice.controll
 
 const router = require('express').Router();
 
-router.get("/get-all/:userId", PracticeController.getAllPractices)
+router.get("/get-all", PracticeController.getAllPractices)
 router.get("/get/:practiceId", PracticeController.getOnePractice)
-router.patch("/add/:userId", PracticeController.addPractice)
+router.patch("/add", PracticeController.addPractice)
 router.patch("/update/:practiceId", PracticeController.updatePractice)
 router.delete("/remove/:practiceId", PracticeController.deletePractice)
 
