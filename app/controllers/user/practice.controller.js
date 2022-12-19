@@ -14,7 +14,7 @@ class PracticeController extends Controller {
             const endCurrentDay = new Date();
             endCurrentDay.setHours(23, 59, 59, 999);
 
-            // month
+            // week
             let curr = new Date;
             let first = (curr.getDate() - curr.getDay()); 
             let last = first + 6;
@@ -37,6 +37,7 @@ class PracticeController extends Controller {
             const currentWeekPractices = await this.getTimePractices(practices.practices, startCurrentWeek, endCurrentWeek)
             const currentWeekTotalPracticeTime = this.getTotalPracticeTime(currentWeekPractices)
             
+
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {

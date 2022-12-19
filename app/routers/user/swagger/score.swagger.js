@@ -33,15 +33,10 @@
 
 /**
  * @swagger
- *  /user/score/get-all/{userId}:
+ *  /user/score/get-all:
  *      get:
  *          tags: [Score]
  *          summary: get all user scores
- *          parameters:
- *              -   in: path
- *                  name: userId
- *                  type: string
- *                  required: true
  *          responses:
  *              200:
  *                  description: success

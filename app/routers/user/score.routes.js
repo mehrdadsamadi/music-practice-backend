@@ -4,7 +4,8 @@ const { PERMISSIONS } = require('../../utils/constants');
 
 const router = require('express').Router();
 
-router.get("/get-all/:userId", ScoreController.getAllScores)
+router.get("/get-all-users-score", ScoreController.getAllUsersScore)
+router.get("/get-all", ScoreController.getAllScores)
 router.get("/get/:scoreId", ScoreController.getOneScore)
 router.patch("/add/:userId", can([PERMISSIONS.ADMIN]), ScoreController.addScore)
 router.patch("/update/:scoreId", can([PERMISSIONS.ADMIN]), ScoreController.updateScore)

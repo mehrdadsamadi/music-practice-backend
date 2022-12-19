@@ -7,7 +7,7 @@ const Controller = require("../controller");
 class timeGoalController extends Controller {
     async getAllTimeGoal(req, res, next) {
         try {
-            const timeGoals = await TimeGoalModel.find({}).populate([{path: "users", select:"-otp"}])
+            const timeGoals = await TimeGoalModel.find({users: req.user._id}).populate([{path: "users", select:"-otp"}])
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
