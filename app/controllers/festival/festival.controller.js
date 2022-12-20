@@ -36,6 +36,28 @@ class FestivalController extends Controller {
         }
     }
 
+    async getActiveFestival(req, res, next) {
+        try {
+            const currentDate = new Date().toISOString().slice(0, 10)
+
+            const festival = await FestivalModel.find({
+                $and: [
+                    {start_in: {$lte: currentDate}},
+                    {end_in: {$gte: currentDate}},
+                ]
+            })
+            
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    festival: festival[0]
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async addUserToFestival(req, res, next) {
         try {
             const {festivalId} = req.params

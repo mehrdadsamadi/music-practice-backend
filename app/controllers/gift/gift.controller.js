@@ -39,9 +39,8 @@ class GiftController extends Controller {
 
     async createGift(req, res, next) {
         try {
-            const {name, min_score, in_festival} = req.body
 
-            await GiftModel.create({name, min_score, in_festival})
+            await GiftModel.create(req.body)
 
             return res.status(StatusCodes.CREATED).json({
                 status: StatusCodes.CREATED,

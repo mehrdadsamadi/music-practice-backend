@@ -17,6 +17,9 @@
  *                  in_festival:
  *                      type: boolean
  *                      description: gift use in festival or not
+ *                  rank:
+ *                      type: string
+ *                      description: rank to get gift
  *          updateGift:
  *              type: object
  *              properties:
@@ -29,6 +32,9 @@
  *                  in_festival:
  *                      type: boolean
  *                      description: gift use in festival or not
+ *                  rank:
+ *                      type: string
+ *                      description: rank to get gift
  */
 
 /**

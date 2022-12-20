@@ -3,7 +3,8 @@ const {Schema, model} = require('mongoose');
 const giftSchema = new Schema({
     name: {type: String, required: true},
     min_score: {type: String, required: true},
-    in_festival: {type: Boolean, default: false}
+    in_festival: {type: Boolean, default: false},
+    rank: {type: String, default: ""}
 }, {
     timestamps: true,
     versionKey: false
