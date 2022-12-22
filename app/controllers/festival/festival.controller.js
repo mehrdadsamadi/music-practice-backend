@@ -66,8 +66,8 @@ class FestivalController extends Controller {
             const festival = await this.findFestival(festivalId)
             
             let ranking = []
-            // FIXME: await below
-            festival.users.forEach(async user => {
+            
+            for (const user of festival.users) {
                 const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
                 const {practices} = userInfo
 
@@ -84,13 +84,14 @@ class FestivalController extends Controller {
                     instrument: userInfo.instrument.name,
                     score: totalUserFestivalPractice
                 })
-                
-            })
+            }
+
+            const sortedRanking = ranking.sort((a, b) => a.score - b.score)
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    ranking
+                    ranking: sortedRanking.reverse()
                 }
             })
 
