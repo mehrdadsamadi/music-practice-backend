@@ -2,6 +2,7 @@ const createHttpError = require('http-errors');
 const {StatusCodes} = require('http-status-codes');
 
 const { FestivalModel } = require("../../models/festival.model");
+const { UserModel } = require('../../models/user.model');
 const Controller = require("../controller");
 
 class FestivalController extends Controller {
@@ -58,6 +59,64 @@ class FestivalController extends Controller {
         }
     }
 
+    async getFestivalRanking(req, res, next) {
+        try {
+            const {festivalId} = req.params
+
+            const festival = await this.findFestival(festivalId)
+            
+            let ranking = []
+            // FIXME: await below
+            festival.users.forEach(async user => {
+                const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
+                const {practices} = userInfo
+
+                const enterUserDate = new Date(user.createdAt)
+                const endCurrentDay = new Date();
+                endCurrentDay.setHours(23, 59, 59, 999);
+                
+                const userFestivalPractice = this.getTimePractices(practices, enterUserDate, endCurrentDay)
+                const totalUserFestivalPractice = this.getTotalPracticeTime(userFestivalPractice)
+                
+                ranking.push({
+                    first_name: userInfo.first_name,
+                    last_name: userInfo.last_name,
+                    instrument: userInfo.instrument.name,
+                    score: totalUserFestivalPractice
+                })
+                
+            })
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    ranking
+                }
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getTimePractices(practices, start, end) {
+        return practices.filter(pr => {
+            const prDay = new Date(pr.createdAt)
+            if(prDay.getTime() >= start.getTime() && prDay.getTime() <= end.getTime()) {
+                return pr
+            }
+        })
+    }
+
+    getTotalPracticeTime(timePractices) {
+        let totalPracticeTime = 0
+        timePractices.forEach(tp => {
+            totalPracticeTime += +tp.time
+        })
+
+        return totalPracticeTime
+    }
+
     async addUserToFestival(req, res, next) {
         try {
             const {festivalId} = req.params
@@ -65,12 +124,12 @@ class FestivalController extends Controller {
             const festival = await this.findFestival(festivalId)
             if(!festival) throw createHttpError.NotFound("فستیوالی با این آیدی یافت نشد")
             
-            const existUser = festival.users.filter(user => user._id.equals(req.user._id))
+            const existUser = festival.users.filter(user => user.user.equals(req.user._id))
             if(existUser.length) throw createHttpError.BadRequest("شما قبلا در این جشنواره شرکت کرده اید")
 
             const result = await FestivalModel.updateOne({_id: festivalId}, {
                 $push: {
-                    users: req.user._id
+                    users: {user: req.user._id}
                 }
             })
             if(!result.modifiedCount) throw createHttpError.InternalServerError("شرکت در جشنواره ناموفق بود")

@@ -1,4 +1,4 @@
-const {Schema} = require('mongoose');
+const {Schema, Types} = require('mongoose');
 
 const scoreSchema = new Schema({
     score: {type: String, required: true},
@@ -23,8 +23,16 @@ const practiceSchema = new Schema({
     timestamps: true
 })
 
+const festivalUserSchema = new Schema({
+    user: {type: Types.ObjectId, ref: "user"}
+}, {
+    versionKey: false,
+    timestamps: true
+})
+
 module.exports = {
     scoreSchema,
     messageSchema,
     practiceSchema,
+    festivalUserSchema
 }
