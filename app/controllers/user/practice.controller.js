@@ -96,6 +96,9 @@ class PracticeController extends Controller {
                 const scoreResult = await UserModel.updateOne({_id}, {
                     $push: {
                         scores: {score, description: "امتیاز بدست آمده از رسیدن به اهداف زمانی"}
+                    },
+                    $inc: {
+                        available_score: +score
                     }
                 })
                 if(!scoreResult.modifiedCount) throw createHttpError.InternalServerError("اضافه کردن امتیاز ناموفق بود")
@@ -104,7 +107,8 @@ class PracticeController extends Controller {
             return res.status(StatusCodes.CREATED).json({
                 status: StatusCodes.CREATED,
                 data: {
-                    message: "ثبت تمرین با موفقیت انجام شد"
+                    message: "ثبت تمرین با موفقیت انجام شد",
+                    score
                 }
             })
         } catch (error) {

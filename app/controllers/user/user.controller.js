@@ -6,7 +6,7 @@ const Controller = require("../controller");
 class UserController extends Controller {
     async getAllUsers(req, res, next) {
         try {
-            const users = await UserModel.find({})
+            const users = await UserModel.find({}).populate([{path: "instrument"}, {path: "purchase_gifts"}])
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -37,29 +37,24 @@ class UserController extends Controller {
         }
     }
 
-    async updateUser(req, res, next) {
+    async deleteUser(req, res, next) {
         try {
-            const {messageId} = req.params
+            const {userId} = req.params
 
-            const data = JSON.parse(JSON.stringify(req.body))
-            
-            const result = await UserModel.updateOne({"messages._id" : messageId}, {
-                $set: {
-                    "messages.$.message": data?.message
-                }
-            })
-            if(!result.modifiedCount) throw createHttpError.InternalServerError("ویرایش پیام ناموفق بود")
+            const result = await UserModel.deleteOne({_id: userId})
+            if(!result.deletedCount) throw createHttpError.InternalServerError("حذف کاربر ناموفق بود")
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    message: "ویرایش پیام موفقیت آمیز بود"
+                    message: "حذف کاربر با موفقیت انجام شد"
                 }
             })
         } catch (error) {
             next(error)
         }
     }
+
 }
 
 module.exports = {
