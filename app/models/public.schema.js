@@ -27,12 +27,23 @@ const festivalUserSchema = new Schema({
     user: {type: Types.ObjectId, ref: "user"}
 }, {
     versionKey: false,
-    timestamps: true
+    timestamps: true,
+    _id: false,
+})
+
+const purchaseGiftSchema = new Schema({
+    gift: {type: Types.ObjectId, ref: "gift"},
+    is_receive: {type: Boolean, default: false},
+}, {
+    versionKey: false,
+    timestamps: true,
+    _id: false,
 })
 
 module.exports = {
     scoreSchema,
     messageSchema,
     practiceSchema,
-    festivalUserSchema
+    festivalUserSchema,
+    purchaseGiftSchema
 }

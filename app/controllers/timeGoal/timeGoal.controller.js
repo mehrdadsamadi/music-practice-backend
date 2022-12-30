@@ -5,9 +5,24 @@ const { TimeGoalModel } = require("../../models/timeGoal.model");
 const Controller = require("../controller");
 
 class timeGoalController extends Controller {
-    async getAllTimeGoal(req, res, next) {
+    async getAllUserTimeGoal(req, res, next) {
         try {
             const timeGoals = await TimeGoalModel.find({users: req.user._id}).populate([{path: "users", select:"-otp"}])
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    timeGoals
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+    
+    async getAllTimeGoal(req, res, next) {
+        try {
+            const timeGoals = await TimeGoalModel.find({}).populate([{path: "users", select:"-otp"}])
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,

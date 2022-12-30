@@ -6,7 +6,7 @@ const Controller = require("../controller");
 class UserController extends Controller {
     async getAllUsers(req, res, next) {
         try {
-            const users = await UserModel.find({}).populate([{path: "instrument"}, {path: "purchase_gifts"}])
+            const users = await UserModel.find({role: {$ne: "ADMIN"}}).populate([{path: "instrument"}, {path: "purchase_gifts.gift"}])
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,

@@ -2,6 +2,7 @@ const createHttpError = require("http-errors");
 const { StatusCodes } = require("http-status-codes");
 
 const {GiftModel} = require("../../models/gift.model");
+const { UserModel } = require("../../models/user.model");
 const Controller = require("../controller");
 
 class GiftController extends Controller {
@@ -71,6 +72,29 @@ class GiftController extends Controller {
                 status: StatusCodes.OK,
                 data: {
                     message: "هدیه مورد نظر با موفقیت ویرایش شد"
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async receiveGift(req, res, next) {
+        try {
+            const {userId, giftId, status} = req.params
+            
+            const result = await UserModel.updateOne({_id: userId, "purchase_gifts.gift": giftId}, {
+                $set: {
+                    "purchase_gifts.$.is_receive": (status === "true")
+                }
+            })
+
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("تغییر دریافت هدیه ناموفق بود")
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    message: "تغییر دریافت هدیه با موفقیت انجام شد"
                 }
             })
         } catch (error) {

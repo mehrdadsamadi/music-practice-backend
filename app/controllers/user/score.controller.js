@@ -7,8 +7,8 @@ class ScoreController extends Controller {
     async getAllUsersScore(req, res, next) {
         try {
 
-            const users = await UserModel.find({}, {scores: 1, first_name: 1, last_name: 1, instrument: 1, role: 1})
-            if(!users) throw createHttpError.NotFound("کاربری با این آیدی یافت نشد")
+            const users = await UserModel.find({role: {$ne: "ADMIN"}}, {scores: 1, first_name: 1, last_name: 1, instrument: 1, role: 1})
+            // if(!users) throw createHttpError.NotFound("کاربری با این آیدی یافت نشد")
 
             let curr = new Date;
             let first = (curr.getDate() - curr.getDay()); 
