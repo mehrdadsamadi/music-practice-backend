@@ -8,7 +8,7 @@ const Controller = require("../controller");
 class FestivalController extends Controller {
     async getAllFestivals(req, res, next) {
         try {
-            const festivals = await FestivalModel.find({}, "-users.otp").populate([{path: "gifts"}, {path: "users", select:"-otp"}])
+            const festivals = await FestivalModel.find({}, "-users.otp").populate([{path: "gifts"}, {path: "users.user", select:"-otp"}])
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -39,12 +39,13 @@ class FestivalController extends Controller {
 
     async getActiveFestival(req, res, next) {
         try {
-            const currentDate = new Date().toISOString().slice(0, 10)
+            let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+            let localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1).slice(0, 10);
 
             const festival = await FestivalModel.find({
                 $and: [
-                    {start_in: {$lte: currentDate}},
-                    {end_in: {$gte: currentDate}},
+                    {start_in: {$lte: localISOTime}},
+                    {end_in: {$gte: localISOTime}},
                 ]
             })
             
