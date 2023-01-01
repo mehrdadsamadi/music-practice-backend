@@ -43,17 +43,17 @@ class FestivalController extends Controller {
             let tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
             let localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1).slice(0, 10);
 
-            const festival = await FestivalModel.find({
+            const festival = await FestivalModel.findOne({
                 $and: [
                     {start_in: {$lte: localISOTime}},
                     {end_in: {$gte: localISOTime}},
                 ]
-            })
+            }).populate([{path: "gifts"}, {path: "users.user", select:"-otp"}])
             
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    festival: festival[0]
+                    festival
                 }
             })
         } catch (error) {
@@ -70,6 +70,7 @@ class FestivalController extends Controller {
             if(festival.given_gifts) throw createHttpError.BadRequest("هدایای این جشنواره قبلا اهدا شده است")
 
             const ranking = await this.getRanking(festivalId)
+            
             let errors = []
 
             for (const giftId of festival.gifts) {
@@ -121,31 +122,6 @@ class FestivalController extends Controller {
     async getFestivalRanking(req, res, next) {
         try {
             const {festivalId} = req.params
-
-            // const festival = await this.findFestival(festivalId)
-            
-            // let ranking = []
-            
-            // for (const user of festival.users) {
-            //     const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
-            //     const {practices} = userInfo
-
-            //     const enterUserDate = new Date(user.createdAt)
-            //     const endCurrentDay = new Date();
-            //     endCurrentDay.setHours(23, 59, 59, 999);
-                
-            //     const userFestivalPractice = this.getTimePractices(practices, enterUserDate, endCurrentDay)
-            //     const totalUserFestivalPractice = this.getTotalPracticeTime(userFestivalPractice)
-                
-            //     ranking.push({
-            //         first_name: userInfo.first_name,
-            //         last_name: userInfo.last_name,
-            //         instrument: userInfo.instrument.name,
-            //         score: totalUserFestivalPractice
-            //     })
-            // }
-
-            // const sortedRanking = ranking.sort((a, b) => a.score - b.score)
 
             const ranking = await this.getRanking(festivalId)
 
