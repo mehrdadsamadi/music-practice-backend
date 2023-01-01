@@ -5,6 +5,7 @@ const festivalSchema = new Schema({
     name: {type: String, required: true},
     start_in: {type: String, required: true},
     end_in: {type: String, required: true},
+    given_gifts: {type: Boolean, default: false},
     gifts: {type: [Types.ObjectId], ref: "gift", default: []},
     users: {type: [festivalUserSchema], default: []},
 }, {

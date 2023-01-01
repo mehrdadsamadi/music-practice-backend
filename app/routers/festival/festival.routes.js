@@ -6,6 +6,7 @@ const router = require('express').Router();
 
 router.get("/get-all", FestivalController.getAllFestivals)
 router.get("/get/:festivalId", FestivalController.getOneFestival)
+router.get("/giving-gifts/:festivalId", can([PERMISSIONS.ADMIN]), FestivalController.givingGifts)
 router.get("/get-ranking/:festivalId", FestivalController.getFestivalRanking)
 router.get("/active", FestivalController.getActiveFestival)
 router.patch("/add-user/:festivalId", FestivalController.addUserToFestival)

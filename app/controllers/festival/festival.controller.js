@@ -2,6 +2,7 @@ const createHttpError = require('http-errors');
 const {StatusCodes} = require('http-status-codes');
 
 const { FestivalModel } = require("../../models/festival.model");
+const { GiftModel } = require('../../models/gift.model');
 const { UserModel } = require('../../models/user.model');
 const Controller = require("../controller");
 
@@ -60,45 +61,134 @@ class FestivalController extends Controller {
         }
     }
 
-    async getFestivalRanking(req, res, next) {
+    async givingGifts(req, res, next) {
         try {
             const {festivalId} = req.params
 
             const festival = await this.findFestival(festivalId)
-            
-            let ranking = []
-            
-            for (const user of festival.users) {
-                const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
-                const {practices} = userInfo
+            if(!festival) throw createHttpError.BadRequest("جشنواره ای با این آیدی یافت نشد")
+            if(festival.given_gifts) throw createHttpError.BadRequest("هدایای این جشنواره قبلا اهدا شده است")
 
-                const enterUserDate = new Date(user.createdAt)
-                const endCurrentDay = new Date();
-                endCurrentDay.setHours(23, 59, 59, 999);
-                
-                const userFestivalPractice = this.getTimePractices(practices, enterUserDate, endCurrentDay)
-                const totalUserFestivalPractice = this.getTotalPracticeTime(userFestivalPractice)
-                
-                ranking.push({
-                    first_name: userInfo.first_name,
-                    last_name: userInfo.last_name,
-                    instrument: userInfo.instrument.name,
-                    score: totalUserFestivalPractice
-                })
+            const ranking = await this.getRanking(festivalId)
+            let errors = []
+
+            for (const giftId of festival.gifts) {
+
+                const targetGift = await GiftModel.findOne({_id: giftId})
+                if(!targetGift) errors.push(`هدیه ای با آیدی ${giftId} یافت نشد`)
+
+                const targetUser = ranking[targetGift.rank - 1]
+                if(!targetUser) continue
+
+                const fullname = `${targetUser.first_name + " " + targetUser.last_name}`
+
+                const existGift = await UserModel.findOne({_id: targetUser.id, "purchase_gifts.gift": giftId})
+                if(existGift) errors.push(`${fullname} ${targetGift.name} را قبلا دریافت کرده است`)
+
+                if(targetUser.score >= targetGift.min_score) {
+                    const result = await UserModel.updateOne({_id: targetUser.id}, {
+                        $push: {
+                            purchase_gifts: {gift: giftId, is_receive: false}
+                        }
+                    })
+                    if(!result.modifiedCount) errors.push(`خطای سرور! ${targetGift.name} به ${fullname} اهدا نشد`)
+                } else {
+                    errors.push(`امتیاز ${fullname} به حداقل امتیاز ${targetGift.name} نرسیده است`)
+                }
             }
 
-            const sortedRanking = ranking.sort((a, b) => a.score - b.score)
+            const result = await FestivalModel.updateOne({_id: festivalId}, {
+                $set: {
+                    given_gifts: true
+                }
+            })
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("ویرایش جشنواره ناموفق بود")
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    ranking: sortedRanking.reverse()
+                    message: "اهدا هدایا با موفقیت انجام شد",
+                    errors
+                }
+            })
+
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getFestivalRanking(req, res, next) {
+        try {
+            const {festivalId} = req.params
+
+            // const festival = await this.findFestival(festivalId)
+            
+            // let ranking = []
+            
+            // for (const user of festival.users) {
+            //     const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
+            //     const {practices} = userInfo
+
+            //     const enterUserDate = new Date(user.createdAt)
+            //     const endCurrentDay = new Date();
+            //     endCurrentDay.setHours(23, 59, 59, 999);
+                
+            //     const userFestivalPractice = this.getTimePractices(practices, enterUserDate, endCurrentDay)
+            //     const totalUserFestivalPractice = this.getTotalPracticeTime(userFestivalPractice)
+                
+            //     ranking.push({
+            //         first_name: userInfo.first_name,
+            //         last_name: userInfo.last_name,
+            //         instrument: userInfo.instrument.name,
+            //         score: totalUserFestivalPractice
+            //     })
+            // }
+
+            // const sortedRanking = ranking.sort((a, b) => a.score - b.score)
+
+            const ranking = await this.getRanking(festivalId)
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                data: {
+                    ranking
                 }
             })
 
         } catch (error) {
             next(error)
         }
+    }
+
+    async getRanking(festivalId) {
+        const festival = await this.findFestival(festivalId)
+            
+        let ranking = []
+        
+        for (const user of festival.users) {
+            const userInfo = await UserModel.findOne({_id: user.user}).populate([{path: "instrument"}])
+            const {practices} = userInfo
+
+            const enterUserDate = new Date(user.createdAt)
+            const endCurrentDay = new Date();
+            endCurrentDay.setHours(23, 59, 59, 999);
+            
+            const userFestivalPractice = this.getTimePractices(practices, enterUserDate, endCurrentDay)
+            const totalUserFestivalPractice = this.getTotalPracticeTime(userFestivalPractice)
+            
+            ranking.push({
+                id: userInfo._id,
+                first_name: userInfo.first_name,
+                last_name: userInfo.last_name,
+                instrument: userInfo.instrument.name,
+                score: totalUserFestivalPractice
+            })
+        }
+
+        const sortedRanking = ranking.sort((a, b) => a.score - b.score)
+
+        return sortedRanking.reverse()
     }
 
     getTimePractices(practices, start, end) {
@@ -124,7 +214,7 @@ class FestivalController extends Controller {
             const {festivalId} = req.params
 
             const festival = await this.findFestival(festivalId)
-            if(!festival) throw createHttpError.NotFound("فستیوالی با این آیدی یافت نشد")
+            if(!festival) throw createHttpError.NotFound("جشنواره ای با این آیدی یافت نشد")
             
             const existUser = festival.users.filter(user => user.user.equals(req.user._id))
             if(existUser.length) throw createHttpError.BadRequest("شما قبلا در این جشنواره شرکت کرده اید")
@@ -155,7 +245,7 @@ class FestivalController extends Controller {
             return res.status(StatusCodes.CREATED).json({
                 status: StatusCodes.CREATED,
                 data: {
-                    message: "فستیوال با موفقیت ایجاد شد"
+                    message: "جشنواره با موفقیت ایجاد شد"
                 }
             })
         } catch (error) {
@@ -168,19 +258,19 @@ class FestivalController extends Controller {
             const {festivalId} = req.params
 
             const festival = await this.findFestival(festivalId)
-            if(!festival) throw createHttpError.NotFound("فستیوالی با این آیدی یافت نشد")
+            if(!festival) throw createHttpError.NotFound("جشنواره ای با این آیدی یافت نشد")
 
             const data = JSON.parse(JSON.stringify(req.body))
 
             const result = await FestivalModel.updateOne({_id: festivalId}, {
                 $set: data
             })
-            if(!result.modifiedCount) throw createHttpError.InternalServerError("ویرایش فستیوال ناموفق بود")
+            if(!result.modifiedCount) throw createHttpError.InternalServerError("ویرایش جشنواره ناموفق بود")
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    message: "ویرایش فستیوال با موفقیت انجام شد"
+                    message: "ویرایش جشنواره با موفقیت انجام شد"
                 }
             })
         } catch (error) {
@@ -194,12 +284,12 @@ class FestivalController extends Controller {
             await this.findFestival(festivalId)
 
             const result = await FestivalModel.deleteOne({_id: festivalId})
-            if(!result.deletedCount) throw createHttpError.InternalServerError("حذف فستیوال ناموفق بود")
+            if(!result.deletedCount) throw createHttpError.InternalServerError("حذف جشنواره ناموفق بود")
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
-                    message: "حذف فستیوال با موفقیت انجام شد"
+                    message: "حذف جشنواره با موفقیت انجام شد"
                 }
             })
         } catch (error) {
@@ -209,7 +299,7 @@ class FestivalController extends Controller {
 
     async findFestival(festivalId) {
         const festival = await FestivalModel.findOne({_id: festivalId})
-        if(!festival) throw createHttpError.NotFound("فستیوال یافت نشد")
+        if(!festival) throw createHttpError.NotFound("جشنواره یافت نشد")
         return festival
     }
 }
