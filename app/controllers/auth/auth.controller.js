@@ -1,4 +1,3 @@
-const kavenegar = require('kavenegar');
 const createHttpError = require("http-errors");
 const bcrypt = require('bcrypt');
 const {StatusCodes} = require('http-status-codes');
@@ -8,6 +7,8 @@ const { ROLES } = require("../../utils/constants");
 const { generateRandomNumber, signAccessToken } = require("../../utils/function");
 const { getOtpValidteSchema, checkOtpValidateSchema, passwordValidateSchema, loginValidateSchema } = require("../../validators/auth/auth.validator.schema");
 const Controller = require("../controller");
+
+const MelipayamakApi = require('melipayamak-api')
 
 class AuthController extends Controller {
     async getOtp(req, res, next) {
@@ -32,15 +33,23 @@ class AuthController extends Controller {
 کد ورود شما: ${code}
  << اپلیکیشن تمرین موسیقی >>
 `
-            const practicePhone = kavenegar.KavenegarApi({apikey: process.env.KAVENEGAR_API_KEY})
-            practicePhone.Send({ message: sendMessage.trim() , sender: "1000596446" , receptor: mobile });
             
+            const username = '09371567429';
+            const password = '12!S$';
+            const api = new MelipayamakApi(username,password);
+            const sms = api.sms();
+            const to = mobile;
+            const from = '50004001371567';
+            const text = sendMessage.trim();
+
+            const result = await sms.send(to,from,text)
+
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 data: {
                     message: "کد اعتبار سنجی با موفقیت برای شما ارسال شد",
-                    code,
-                    mobile
+                    // code,
+                    // mobile
                 }
             })
 
