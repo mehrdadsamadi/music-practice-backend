@@ -33,7 +33,7 @@ module.exports = class Application {
         this.#app.use(express.json())
         this.#app.use(express.urlencoded({extended: true}))
         this.#app.use(express.static(path.join(__dirname, "..", "public")))
-
+        
         this.#app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(
             swaggerJsDoc({
                 swaggerDefinition: {
@@ -49,7 +49,7 @@ module.exports = class Application {
                     },
                     servers: [
                         {
-                            url: `http://localhost:${this.#PORT}`
+                            url: `http://mp-app.ir:${this.#PORT}`
                         }
                     ],
                     components: {
